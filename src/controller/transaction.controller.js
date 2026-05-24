@@ -23,9 +23,10 @@ async function createTransactionController(req, res) {
     _id: fromAccount
   })
 
-  const toUserAccount = await accountModel.findOne({
+  const toUserAccount = await accountModel
+  .findOne({
     _id: toAccount
-  })
+  }).populate("user");
 
   if (!fromUserAccount || !toUserAccount) {
     return res.status(404).json({
@@ -143,6 +144,8 @@ async function createTransactionController(req, res) {
    */
   await emailService.sendTransactionEmail(req.user.email, req.user.name, amount, toAccount)
 
+  await emailService.recieverTransactionEmail(toUserAccount.user.email, toUserAccount.user.name, amount, fromAccount)
+
   return res.status(201).json({
     message: "Transaction completed successfully",
     transaction: transaction
@@ -214,7 +217,23 @@ async function createInitialFundsTransaction(req, res) {
   }
 }
 
+async function getTransactionHistoryController(req, res) {
+
+  const { accountId } = req.params;
+
+  const transactions = await transactionModel.find({
+    $or: [
+      { fromAccount: accountId },
+      { toAccount: accountId }
+    ]
+  }).populate({ path: "fromAccount", populate: { path: "user", select: "name" } }).populate({ path: "toAccount", populate: { path: "user", select: "name" } }).sort({ createdAt: -1 });
+
+  return res.status(200).json({
+    transactions
+  });
+}
 export default {
   createTransactionController,
-  createInitialFundsTransaction
+  createInitialFundsTransaction,
+  getTransactionHistoryController
 }

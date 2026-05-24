@@ -22,4 +22,14 @@ transactionRouter.post("/", authMiddleware.authMiddleware, transactionController
 transactionRouter.post("/system/initial-funds", authMiddleware.authSystemUserMiddleware, transactionController.createInitialFundsTransaction)
 
 
+
+/** * - GET /api/transactions/history/:accountId
+ * - Get transaction history for an account
+ */
+
+transactionRouter.get("/history/:accountId", authMiddleware.authMiddleware, transactionController.getTransactionHistoryController)
+
+
+
+
 export default transactionRouter;
