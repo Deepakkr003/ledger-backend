@@ -25,6 +25,28 @@ async function getUserAccountController(req, res) {
   )
 }
 
+async function getAllAccountsController(req, res) {
+
+  const accounts = await accountModel.find()
+    .populate("user", "name email");
+
+  const accountsWithBalance = await Promise.all(
+
+    accounts.map(async (account) => {
+
+      const balance = await account.getBalance();
+
+      return {
+        ...account.toObject(),
+        balance
+      };
+    })
+
+  );
+
+  res.status(200).json(accountsWithBalance);
+}
+
 async function getAccountBalanceController(req, res) {
     const { accountId } = req.params;
 
@@ -48,5 +70,5 @@ async function getAccountBalanceController(req, res) {
 }
 
 export default {
-  createAccountController, getUserAccountController, getAccountBalanceController
+  createAccountController, getUserAccountController, getAccountBalanceController, getAllAccountsController
 }

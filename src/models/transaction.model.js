@@ -4,14 +4,14 @@ const transactionSchema = new mongoose.Schema({
   fromAccount:{
     type: mongoose.Schema.Types.ObjectId,
     ref: "account",
-    required: [true, "Transaction must be assicoated witha from account"],
-    intex: true,
+    required: false,
+    index: true,
   },
   toAccount: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "account",
     required: [true, "Transaction must be assicoated witha to account"],
-    intex: true,
+    index: true,
   },
   status:{
     type: String,

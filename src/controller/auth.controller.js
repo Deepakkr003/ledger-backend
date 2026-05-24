@@ -34,10 +34,11 @@ async function userRegisterController(req, res) {
 
   res.status(201).json({
     user: {
-      _id: user._id,
-      email: user.email,
-      name: user.name
-    },
+    _id: user._id,
+    email: user.email,
+    name: user.name,
+    systemUser: user.systemUser
+  },
     token
   })
 
@@ -54,12 +55,20 @@ async function userLoginController(req, res) {
 
   const {email, password} = req.body
 
-  const user = await userModel.findOne({email})
+  const user = await userModel.findOne({ email }).select("+password +systemUser");
 
-  if(!user){
+  if (!user) {
     return res.status(401).json({
       message: "Email or password is Invalid"
-    })
+    });
+  }
+
+  const isMatch = await user.comparePassword(password);
+
+  if (!isMatch) {
+    return res.status(401).json({
+      message: "Email or password is Invalid"
+    });
   }
 
   const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "3d" })
@@ -70,7 +79,8 @@ async function userLoginController(req, res) {
     user: {
       _id: user._id,
       email: user.email,
-      name: user.name
+      name: user.name,
+      systemUser: user.systemUser
     },
     token
   })

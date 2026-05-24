@@ -3,8 +3,14 @@ import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.routes.js"
 import accountRouter from "./routes/account.routes.js"
 import transactionRouter from "./routes/transaction.routes.js"
+import cors from "cors";
 
 const app = express();
+
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
 
 
 app.use(express.json());
