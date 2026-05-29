@@ -33,4 +33,14 @@ router.get("/all", authMiddleware.authSystemUserMiddleware, accountController.ge
 router.get("/balance/:accountId", authMiddleware.authMiddleware, accountController.getAccountBalanceController)
 
 
+
+/** * - PATCH /api/accounts/status/:accountId
+ * - Update account status (active/inactive)
+ * - Protected Route (System User Only)
+ */
+
+router.patch("/status/:accountId", authMiddleware.authSystemUserMiddleware, accountController.updateAccountStatusController
+)
+
+
 export default router;

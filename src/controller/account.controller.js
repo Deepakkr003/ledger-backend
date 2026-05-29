@@ -69,6 +69,39 @@ async function getAccountBalanceController(req, res) {
     })
 }
 
+async function updateAccountStatusController(req, res) {
+
+  const { accountId } = req.params;
+  const { status } = req.body;
+
+  const allowedStatus = ["ACTIVE", "FROZEN", "CLOSED"]
+
+  if(!allowedStatus.includes(status)) {
+    return res.status(400).json({
+      message: "Invalid Status"
+    })
+  }
+
+  const account = await accountModel.findByIdAndUpdate(
+    accountId,
+    { status },
+    { new: true }
+  )
+
+  if (!account) {
+    return res.status(404).json({
+      message: "Account not found"
+    })
+  }
+
+  return res.status(200).json(
+    {
+      message: `Account status updated to ${status}`,
+      account
+    }
+  )
+}
+
 export default {
-  createAccountController, getUserAccountController, getAccountBalanceController, getAllAccountsController
+  createAccountController, getUserAccountController, getAccountBalanceController, getAllAccountsController, updateAccountStatusController
 }
